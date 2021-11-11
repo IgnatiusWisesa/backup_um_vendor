@@ -6,7 +6,7 @@ import { VendorUser } from './schema/vendor.schema';
 import * as requester from 'axios';
 import * as MockAdapter from 'axios-mock-adapter';
 import * as dotenv from 'dotenv';
-import { EmailPayload, FalseRegisterPayloadLowercasePass, FalseRegisterPayloadNoNumberPass, FalseRegisterPayloadOnlyNumberPass, FalseRegisterPayloadUppercasePass, RegisterCreatePayload, RegisterCreatePayloadSuccess, TrueRegisterPayload } from './mocks/vendor-payload.mock';
+import { ArrayOfObjectVendors, EmailPayload, FalseRegisterPayloadLowercasePass, FalseRegisterPayloadNoNumberPass, FalseRegisterPayloadOnlyNumberPass, FalseRegisterPayloadUppercasePass, MockId, RegisterCreatePayload, RegisterCreatePayloadSuccess, StringMockId, SuccsessGetVendorByAuthId, SuccsessUpdateVendor, TrueRegisterPayload } from './mocks/vendor-payload.mock';
 
 dotenv.config();
 
@@ -40,6 +40,22 @@ describe('VendorService', () => {
     expect(await service.registerCreate(RegisterCreatePayload)).toEqual(RegisterCreatePayloadSuccess)
   })
 
+  it('should get list of vendors with queries', async () => {
+    expect(await service.find({ fullname:'test', vendor_id: '123' })).toEqual(ArrayOfObjectVendors);
+  });
+
+  it('should get list of vendors with no queries', async () => {
+    expect(await service.find({})).toEqual(ArrayOfObjectVendors);
+  });
+
+  it('should update a vendor', async () => {
+    expect(await service.update(MockId,RegisterCreatePayload)).toEqual(SuccsessUpdateVendor(StringMockId));
+  });
+
+  it('should get a vendor', async () => {
+    expect(await service.findById(MockId)).toEqual(SuccsessGetVendorByAuthId(StringMockId));
+  });
+
   // register
   it(`should register a user & save to the database successfully`, async () => {
     const body = TrueRegisterPayload
@@ -63,19 +79,19 @@ describe('VendorService', () => {
   })
   
   it(`should not register a user if password not contain uppercase`, async () => {
-    expect(await service.register(FalseRegisterPayloadLowercasePass)).toMatch('error')
+    expect(await service.register(FalseRegisterPayloadLowercasePass)).toEqual({"error": true})
   })
 
   it(`should not register a user if password not contain lowercase`, async () => {
-    expect(await service.register(FalseRegisterPayloadUppercasePass)).toMatch('error')
+    expect(await service.register(FalseRegisterPayloadUppercasePass)).toEqual({"error": true})
   })
 
   it(`should not register a user if password not contain number`, async () => {
-    expect(await service.register(FalseRegisterPayloadNoNumberPass)).toMatch('error')
+    expect(await service.register(FalseRegisterPayloadNoNumberPass)).toEqual({"error": true})
   })
 
   it(`should not register a user if password not contain alphabet`, async () => {
-    expect(await service.register(FalseRegisterPayloadOnlyNumberPass)).toMatch('error')
+    expect(await service.register(FalseRegisterPayloadOnlyNumberPass)).toEqual({"error": true})
   })
 
   // login
@@ -104,19 +120,19 @@ describe('VendorService', () => {
   })
 
   it(`should not login a user if password not contain uppercase`, async () => {
-    expect(await service.login(FalseRegisterPayloadLowercasePass)).toMatch('error')
+    expect(await service.login(FalseRegisterPayloadLowercasePass)).toEqual({"error": true})
   })
 
   it(`should not login a user if password not contain lowercase`, async () => {
-    expect(await service.login(FalseRegisterPayloadUppercasePass)).toMatch('error')
+    expect(await service.login(FalseRegisterPayloadUppercasePass)).toEqual({"error": true})
   })
 
   it(`should not login a user if password not contain number`, async () => {
-    expect(await service.login(FalseRegisterPayloadNoNumberPass)).toMatch('error')
+    expect(await service.login(FalseRegisterPayloadNoNumberPass)).toEqual({"error": true})
   })
 
   it(`should not login a user if password not contain alphabet`, async () => {
-    expect(await service.login(FalseRegisterPayloadOnlyNumberPass)).toMatch('error')
+    expect(await service.login(FalseRegisterPayloadOnlyNumberPass)).toEqual({"error": true})
   })
 
   // check-access
